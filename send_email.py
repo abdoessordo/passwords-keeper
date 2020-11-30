@@ -27,8 +27,7 @@ EA corp.
 		smtp.login(EMAIL_ADRESS, EMAIL_PASSWORD)
 		smtp.send_message(msg)
 
-# send_email_for_new_users("Abdellah", "abdoessordo01@gmail.com")
-send_email_for_new_users("Subjectaad", "saadennigro@gmail.com")
+
 
 
 
