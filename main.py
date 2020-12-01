@@ -1,9 +1,11 @@
 import os
 import json
-from send_email import send_email_for_new_users, send_email_new_password_added
+import send_email
 
 USERS_DATA = {}
-USERS = []
+USERNAMES = []
+EMAILS = []
+PATH = "C:/Users/hp/Desktop/passwords-keeper/"
 
 
 def load_DATA(file):
@@ -12,16 +14,12 @@ def load_DATA(file):
 			return json.load(f)
 
 
-
-def get_Users(dicti):
-	users = []
-	for key in dicti.keys():
-			users.append(key)
-	return users
+def get_Usernames(dicti):
+	return list(dicti.keys())
 
 
 def get_emails(dicti):
-	users = get_Users(dicti)
+	users = get_Usernames(dicti)
 	emails = []
 	for user in users:
 		emails.append(dicti[user]["email"])
@@ -29,9 +27,10 @@ def get_emails(dicti):
 
 
 def add_user(firstname, lastname, username, email, password):
-	global USERS
+	global USERNAMES
+	global EMAILS
 
-	if (username in USERS) or email in(get_emails(USERS_DATA)):
+	if username in USERNAMES or email in EMAILS:
 		print("Username or Email is already taken please enter another one.")
 	else:
 		USERS_DATA[username] = {
@@ -41,17 +40,18 @@ def add_user(firstname, lastname, username, email, password):
 			"email" : email,	
 			"password" : password
 		}
-		send_email_for_new_users(firstname, email)
+		# send_email.new_user(firstname, email)
 		print(f"{firstname} {lastname} have been added")
 
-		with open(f'./passwords_DATA/{username}_passwords.json', 'w') as f:
-			json.dump({}, f, indent=4)
+		with open(f'{PATH}/data/passwords_DATA/{username}_passwords.json', 'w') as f:
+			json.dump({}, f)
 
 		print(USERS_DATA)
 		USERS = get_Users(USERS_DATA)
+		EMAILS = get_emails(USERS_DATA)
 
 
-def clear_USERS_DATA(mode):
+def remove_USERS_DATA(mode):
 	global USERS_DATA
 
 	if mode == all:
@@ -84,7 +84,7 @@ def login(username, password):
 
 def add_password(username, app, link, password):
 	temp = load_passwords(username)
-	if app in list(load_passwords(username).keys()):
+	if app in list(load_passwords(username).keys()):   #check if the password is existing
 		print("A password for this app have already been added to your account.")
 	else:
 		temp[app] = {
@@ -93,46 +93,68 @@ def add_password(username, app, link, password):
 			"password" : password
 		}
 		
-		send_email_new_password_added(USERS_DATA[username]["firstname"], app, USERS_DATA[username]["email"])
+		# send_email.new_password_added(
+		# 	USERS_DATA[username]["firstname"], app, USERS_DATA[username]["email"]
+		# 	)
 
-		with open(f"./passwords_DATA/{username}_passwords.json", "w") as f:
+		with open(f"{PATH}/data/passwords_DATA/{username}_passwords.json", "w") as f:
 			json.dump(temp, f, indent=4)	
 
+
 def load_passwords(username):
-	return load_DATA(f"./passwords_DATA/{username}_passwords.json")
+	return load_DATA(f"{PATH}/data/passwords_DATA/{username}_passwords.json")
+
+
+def remove_passwords(username, mode):
+	if mode == all:
+		# send_email.all_passwords_removed(
+		# 	USERS_DATA[username]['firstname'], USERS_DATA[username]['email']
+		# 	)
+		with open(f"{PATH}/data/passwords_DATA/{username}_passwords.json", "w") as f:
+			json.dump({}, f)	
+	elif mode in list(load_passwords(username).keys()):
+		temp = load_passwords(username)
+		temp.pop(mode)
+		# send_email.password_removed(
+		# 	USERS_DATA[username]["firstname"], mode, USERS_DATA[username]["email"]
+		# 	)
+		with open(f"{PATH}/data/passwords_DATA/{username}_passwords.json", "w") as f:
+			json.dump(temp, f, indent=4)	
+	else:
+		print("Password you selected can't be found")
+
+
+USERS_DATA = load_DATA(f"{PATH}/data/users_data.json")
 
 
 
-USERS_DATA = load_DATA("users_data.json")
 
 
-
-
-
-
-
-
-
-# add_password("abdoessordo", "facebook", "facebook.com", "Tanger.2001")
-add_password("abdoessordo", "gmail", "gmail.com", "Tanger.2001")
-
-print(list(load_passwords("abdoessordo").keys()))
-
+# print("USERS_DATA :", USERS_DATA)
 
 # if login("abdoessordo", "Tanger.2001"): print("logged in succesfully,", login("abdoessordo", "Tanger.2001"))
 
+# add_password("abdoessordo", "facebook", "facebook.com", "Tanger.2001")
+# add_password("abdoessordo", "gmail", "gmail.com", "Tanger.2001")
+
+# remove_passwords("abdoessordo", all)
+# remove_passwords("abdoessordo", "gmail")
+remove_passwords("abdoessordo", "facebook")
+
+print(load_passwords("abdoessordo"))
+
+# print("abdoessordo_passwords:", list(load_passwords("abdoessordo").keys()))
 
 # add_user("Abdellah", "Essordo", "abdoessordo", "abdoessordo01@gmail.com", "Tanger.2001")
-# add_user("Ayman", "Essordo", "ayman2272002", "ayman2272002@gmail.com", "Tanger.2002")
+# add_user("Ayman", "Essordo", "ayman2272002", "tonaessordo@gmail.com", "Tanger.2002")
 
 
-# clear_USERS_DATA("ayman2272002")
-# clear_USERS_DATA(all)
+# remove_USERS_DATA("ayman2272002")
+# remove_USERS_DATA(all)
 
-# print("USERS :", get_Users(USERS_DATA))
-# print("USERNAMES :", get_usernames(USERS_DATA))
+# print("USERNAMES :", get_Usernames(USERS_DATA))
 # print("EMAILS :", get_emails(USERS_DATA))
 
 
-with open("users_data.json", "w") as f:
+with open(f"{PATH}/data/users_data.json", "w") as f:
 	json.dump(USERS_DATA, f, indent=4)
