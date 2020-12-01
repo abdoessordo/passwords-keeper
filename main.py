@@ -57,13 +57,13 @@ def remove_USERS_DATA(mode):
 	if mode == all:
 		USERS_DATA = {}
 		for file in os.listdir('passwords_DATA'):
-			os.remove(f'./passwords_DATA/{file}')
+			os.remove(f'{PATH}/data/passwords_DATA/{file}')
 		print("All users have been deleted")
 		return USERS_DATA
 
 	elif mode in(get_Users(USERS_DATA)):
 		USERS_DATA.pop(mode)
-		os.remove(f'./passwords_DATA/{mode}_passwords.json')
+		os.remove(f'{PATH}/data/passwords_DATA/{mode}_passwords.json')
 		print(f"{mode} have been removed")
 		return USERS_DATA
 
@@ -125,9 +125,6 @@ def remove_passwords(username, mode):
 
 
 USERS_DATA = load_DATA(f"{PATH}/data/users_data.json")
-
-
-
 # print("USERS_DATA :", USERS_DATA)
 
 
