@@ -93,9 +93,9 @@ def add_password(username, app, link, password):
 			"password" : password
 		}
 		
-		# send_email.new_password_added(
-		# 	USERS_DATA[username]["firstname"], app, USERS_DATA[username]["email"]
-		# 	)
+		send_email.new_password_added(
+			USERS_DATA[username]["firstname"], app, USERS_DATA[username]["email"]
+			)
 
 		with open(f"{PATH}/data/passwords_DATA/{username}_passwords.json", "w") as f:
 			json.dump(temp, f, indent=4)	
@@ -107,17 +107,17 @@ def load_passwords(username):
 
 def remove_passwords(username, mode):
 	if mode == all:
-		# send_email.all_passwords_removed(
-		# 	USERS_DATA[username]['firstname'], USERS_DATA[username]['email']
-		# 	)
+		send_email.all_passwords_removed(
+			USERS_DATA[username]['firstname'], USERS_DATA[username]['email']
+			)
 		with open(f"{PATH}/data/passwords_DATA/{username}_passwords.json", "w") as f:
 			json.dump({}, f)	
 	elif mode in list(load_passwords(username).keys()):
 		temp = load_passwords(username)
 		temp.pop(mode)
-		# send_email.password_removed(
-		# 	USERS_DATA[username]["firstname"], mode, USERS_DATA[username]["email"]
-		# 	)
+		send_email.password_removed(
+			USERS_DATA[username]["firstname"], mode, USERS_DATA[username]["email"]
+			)
 		with open(f"{PATH}/data/passwords_DATA/{username}_passwords.json", "w") as f:
 			json.dump(temp, f, indent=4)	
 	else:
@@ -128,32 +128,7 @@ USERS_DATA = load_DATA(f"{PATH}/data/users_data.json")
 
 
 
-
-
 # print("USERS_DATA :", USERS_DATA)
-
-# if login("abdoessordo", "Tanger.2001"): print("logged in succesfully,", login("abdoessordo", "Tanger.2001"))
-
-# add_password("abdoessordo", "facebook", "facebook.com", "Tanger.2001")
-# add_password("abdoessordo", "gmail", "gmail.com", "Tanger.2001")
-
-# remove_passwords("abdoessordo", all)
-# remove_passwords("abdoessordo", "gmail")
-remove_passwords("abdoessordo", "facebook")
-
-print(load_passwords("abdoessordo"))
-
-# print("abdoessordo_passwords:", list(load_passwords("abdoessordo").keys()))
-
-# add_user("Abdellah", "Essordo", "abdoessordo", "abdoessordo01@gmail.com", "Tanger.2001")
-# add_user("Ayman", "Essordo", "ayman2272002", "tonaessordo@gmail.com", "Tanger.2002")
-
-
-# remove_USERS_DATA("ayman2272002")
-# remove_USERS_DATA(all)
-
-# print("USERNAMES :", get_Usernames(USERS_DATA))
-# print("EMAILS :", get_emails(USERS_DATA))
 
 
 with open(f"{PATH}/data/users_data.json", "w") as f:
