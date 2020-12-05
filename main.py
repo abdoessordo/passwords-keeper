@@ -29,9 +29,16 @@ def get_emails(dicti):
 def add_user(firstname, lastname, username, email, password):
 	global USERNAMES
 	global EMAILS
+	global results
+
+	EMAILS = get_emails(USERS_DATA)
+	USERNAMES = get_Usernames(USERS_DATA)
+
+	results = ["Username or Email is already taken please enter another one.",
+				 f"{firstname} {lastname} have been added successfully."]
 
 	if username in USERNAMES or email in EMAILS:
-		print("Username or Email is already taken please enter another one.")
+		return results[0]
 	else:
 		USERS_DATA[username] = {
 			"firstname" : firstname,
@@ -40,15 +47,18 @@ def add_user(firstname, lastname, username, email, password):
 			"email" : email,	
 			"password" : password
 		}
-		# send_email.new_user(firstname, email)
-		print(f"{firstname} {lastname} have been added")
+		send_email.new_user(firstname, email)
 
 		with open(f'{PATH}/data/passwords_DATA/{username}_passwords.json', 'w') as f:
 			json.dump({}, f)
+		with open(f"{PATH}/data/users_data.json", "w") as f:
+			json.dump(USERS_DATA, f, indent=4)
 
-		print(USERS_DATA)
-		USERS = get_Users(USERS_DATA)
-		EMAILS = get_emails(USERS_DATA)
+	
+	print(USERS_DATA)
+	USERS = get_Usernames(USERS_DATA)
+	EMAILS = get_emails(USERS_DATA)
+	return results[1]
 
 
 def remove_USERS_DATA(mode):
@@ -61,25 +71,35 @@ def remove_USERS_DATA(mode):
 		print("All users have been deleted")
 		return USERS_DATA
 
-	elif mode in(get_Users(USERS_DATA)):
+	elif mode in(get_Usernames(USERS_DATA)):
+		send_email.account_removed(USERS_DATA[mode]['firstname'], USERS_DATA[mode]['email'])
 		USERS_DATA.pop(mode)
 		os.remove(f'{PATH}/data/passwords_DATA/{mode}_passwords.json')
 		print(f"{mode} have been removed")
+
+		with open(f"{PATH}/data/users_data.json", "w") as f:
+			json.dump(USERS_DATA, f, indent=4)
 		return USERS_DATA
 
 	else: print("User you selected can't be found")
 
+	with open(f"{PATH}/data/users_data.json", "w") as f:
+			json.dump(USERS_DATA, f, indent=4)
+
 
 def login(username, password):
-	if username not in(get_usernames(USERS_DATA)):
+	if username not in(get_Usernames(USERS_DATA)):
 		print("Username not valid.")
 		return False
 	else:
-		for user in get_Users(USERS_DATA):
+		for user in get_Usernames(USERS_DATA):
 			if USERS_DATA[user]["username"] == username and USERS_DATA[user]["password"] == password:
+				print('logged in')
 				return USERS_DATA[user]["email"]
 			elif USERS_DATA[user]["username"] == username and USERS_DATA[user]["password"] != password: 
+				print("Password not valid.")
 				return False
+
 
 
 def add_password(username, app, link, password):
@@ -124,9 +144,6 @@ def remove_passwords(username, mode):
 		print("Password you selected can't be found")
 
 
+
 USERS_DATA = load_DATA(f"{PATH}/data/users_data.json")
-# print("USERS_DATA :", USERS_DATA)
-
-
-with open(f"{PATH}/data/users_data.json", "w") as f:
-	json.dump(USERS_DATA, f, indent=4)
+print("USERS_DATA :", USERS_DATA)
