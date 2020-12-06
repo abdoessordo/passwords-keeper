@@ -29,7 +29,7 @@ def get_emails(dicti):
 def add_user(firstname, lastname, username, email, password):
 	global USERNAMES
 	global EMAILS
-	global results
+	global add_user_results
 
 	EMAILS = get_emails(USERS_DATA)
 	USERNAMES = get_Usernames(USERS_DATA)
@@ -38,7 +38,7 @@ def add_user(firstname, lastname, username, email, password):
 				 f"{firstname} {lastname} have been added successfully."]
 
 	if username in USERNAMES or email in EMAILS:
-		return results[0]
+		return add_user_results[0]
 	else:
 		USERS_DATA[username] = {
 			"firstname" : firstname,
@@ -58,7 +58,7 @@ def add_user(firstname, lastname, username, email, password):
 	print(USERS_DATA)
 	USERS = get_Usernames(USERS_DATA)
 	EMAILS = get_emails(USERS_DATA)
-	return results[1]
+	return add_user_results[1]
 
 
 def remove_USERS_DATA(mode):
@@ -103,9 +103,12 @@ def login(username, password):
 
 
 def add_password(username, app, link, password):
+	global add_password_results
+	add_password_results = [f"A password for this app have already been added to {username}.", f"Password for {app} has been added added successfully"]
 	temp = load_passwords(username)
 	if app in list(load_passwords(username).keys()):   #check if the password is existing
-		print("A password for this app have already been added to your account.")
+		print(add_password_results[0])
+		return add_password_results[0]
 	else:
 		temp[app] = {
 			"appname" : app,
@@ -118,7 +121,10 @@ def add_password(username, app, link, password):
 			)
 
 		with open(f"{PATH}/data/passwords_DATA/{username}_passwords.json", "w") as f:
-			json.dump(temp, f, indent=4)	
+			json.dump(temp, f, indent=4)
+
+		print(add_password_results[1])
+		return add_password_results[1]	
 
 
 def load_passwords(username):

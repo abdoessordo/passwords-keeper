@@ -3,6 +3,7 @@ import main
 from helper import EntryWithPlaceholder, MainMenu
 
 def login_btn(controller):
+	global username
 	username = SP_username.get() 
 	user_name['text'] = username
 	if main.login(username, SP_password.get()):
@@ -21,7 +22,7 @@ def logout_btn(controller):
 def create_account():
 	result = main.add_user(PT_first.get(), PT_last.get(), PT_username.get(), PT_email.get(), PT_password.get())
 	PT_promp_user['text'] = result
-	if result == main.results[0]:
+	if result == main.add_user_results[0]:
 		PT_promp_user['fg'] = 'red'
 	else:
 		PT_first.put_placeholder()
@@ -35,6 +36,18 @@ def create_account():
 def deleteacc(user, controller):
 	logout_btn(controller)
 	main.remove_USERS_DATA(user)
+
+def add_password(controller):
+	result = main.add_password(username, appname_entry.get(), applink_entry.get(), app_password_entry.get())
+	PF_promp_user['text'] = result
+	if result == main.add_password_results[0]:
+		PF_promp_user['fg'] = 'red'
+	else:
+		appname_entry.put_placeholder()
+		applink_entry.put_placeholder()
+		app_password_entry.put_placeholder()
+
+		PF_promp_user['fg'] = 'green'
 
 
 class App(Tk):
@@ -53,7 +66,7 @@ class App(Tk):
 
 		self.frames = {}
 
-		for F in (StartPage, PageOne, PageTwo):
+		for F in (StartPage, PageOne, PageTwo, PageThree, PageFour):
 			frame = F(container, self)
 			frame['bg'] = '#a8a4a3'
 			self.frames[F] = frame
@@ -107,6 +120,9 @@ class PageOne(Frame):
 		label = Label(self, text='', bg=PageOne.bg_color)
 		label.place(relx=0.4, rely=0)
 
+		access_acc_BTN = Button(self, text='Access Account', activebackground='orange', command=lambda:controller.show_frame(PageThree))
+		access_acc_BTN.place(relx=0.4, rely=0.25)
+
 		delete_acc_BTN = Button(self, text='Delete account', bg='red', fg='white', command=lambda:deleteacc(user_name['text'], controller))
 		delete_acc_BTN.place(relx=0.4, rely=0.45)
 
@@ -144,10 +160,67 @@ class PageTwo(Frame):
 		PT_add_account.place(relx=0.3, rely=0.6)
 
 		PT_promp_user = Label(holder, text='', bg=PageTwo.bg_color, fg=PageTwo.bg_color)
-		PT_promp_user.place(relx=0.3, rely=0.7)
+		PT_promp_user.place(relx=0.1, rely=0.7)
 
 		PT_hp_BTN = Button(holder,text='Home Page', activebackground='orange',  command = lambda:controller.show_frame(StartPage))
 		PT_hp_BTN.place(relx=0.15, rely=0.9)
+
+class PageThree(Frame):
+	bg_color = '#a8a4a3'
+	def __init__(self, parent, controller):
+		Frame.__init__(self, parent)
+
+		label = Label(self, text="Your Passwords", bg=PageThree.bg_color)
+		label.place(relx=0.4, rely=0)
+
+		# holder = Frame(self, bg=StartPage.bg_color)
+		# holder.place(relx=0.15, rely=0.1, relwidth= 0.7, relheight=0.8)
+
+		# appname_label = Label(holder, text='', bg= StartPage.bg_color, fg='white')
+		# appname_label  
+
+		# applink_label = Label(holder, text='', bg= StartPage.bg_color, fg='white')
+
+		# app_password_label =  Label(holder, text='', bg= StartPage.bg_color, fg='white')
+
+		account_BTN = Button(self, text="Back", activebackground='orange', command=lambda:controller.show_frame(PageOne))
+		account_BTN.place(relx=0.2, rely=0.9)
+
+		add_password_BTN = Button(self, text="Add Password", activebackground='orange', command=lambda:controller.show_frame(PageFour))
+		add_password_BTN.place(relx=0.6, rely=0.9)
+
+class PageFour(Frame):
+	def __init__(self, parent, controller):
+		Frame.__init__(self, parent)
+
+		label = Label(self, text="Add a Passwords", bg=PageThree.bg_color, fg='white')
+		label.place(relx=0.4, rely=0)
+
+		holder = Frame(self, bg=StartPage.bg_color)
+		holder.place(relx=0.2, rely=0.1, relwidth= 0.6, relheight=0.8)
+
+		global appname_entry, applink_entry, app_password_entry, PF_promp_user, add_password_BTN
+
+		appname_entry = EntryWithPlaceholder(holder, 'App Name')
+		appname_entry.place(relx=0.3, rely=0.1)
+		
+		applink_entry = EntryWithPlaceholder(holder, 'App Link')
+		applink_entry.place(relx=0.3, rely=0.3)
+		
+		app_password_entry = EntryWithPlaceholder(holder, 'Enter Password')
+		app_password_entry.place(relx=0.3, rely=0.5)
+
+		PF_promp_user = Label(holder, text='', bg=PageTwo.bg_color, fg=PageTwo.bg_color)
+		PF_promp_user.place(relx=0.1, rely=0.7)
+
+		add_password_BTN = Button(holder, text='Add Password', command=lambda:add_password(controller))
+		add_password_BTN.place(relx=0.4, rely=0.9)
+
+		back_BTN = Button(self, text='Back', command=lambda:controller.show_frame(PageThree))
+		back_BTN.place(relx=0.2, rely=0.95)
+
+
+
 
 
 app = App()
